@@ -29,6 +29,8 @@
         -moz-box-shadow: 0px 2px 10px 0px rgba(0,0,0,0.37);
         box-shadow: 0px 2px 10px 0px rgba(0,0,0,0.37);
         float: left;
+        background-image: url('images/logo.png');
+        background-size: 400px 400px;
     }
 
     #albumArt {
@@ -124,14 +126,15 @@
         },
         {
             'id':          '3',
-            'songName':    'Song Name2',
-            'artistName':  'Artist Name2',
+            'songName':    'Song Name3',
+            'artistName':  'Artist Name3',
             'streamUrl':   'http://bla.com',
             'coverUrl':    'http://vignette1.wikia.nocookie.net/lyricwiki/images/6/67/Metronomy_-_The_English_Riviera.jpg/revision/latest?cb=20110719094709'
         }
     ];
 
     function popQueue(){
+        $('#rightDiv').html('<div id="nowPlaying"><span id="songNameH">Nothing Playing.</span></div>');
         for(var i in queue){
             var newSong = queue[i];
 
@@ -150,6 +153,7 @@
                 marginLeft: '0'
             },300);
         }
+        next();
     }
 
     function addToQueue(d){
@@ -188,6 +192,9 @@
                     <span id="songNameH">Nothing Playing.</span>\
                 ');
                 setTimeout(function(){
+                    $('#albumArt').animate({
+                        opacity: 0
+                    },300);
                     $('#nowPlaying').animate({
                         opacity: 1,
                         marginLeft: '0'
@@ -240,6 +247,10 @@
             },300);
         },100);
     }
+
+    $(window).ready(function(){
+        popQueue();
+    });
 </script>
 
 <div id="topBar">
@@ -247,7 +258,7 @@
 </div>
 <div id="cont">
     <div id="albumArtCont">
-        <img id="albumArt" src="http://vignette1.wikia.nocookie.net/lyricwiki/images/6/67/Metronomy_-_The_English_Riviera.jpg/revision/latest?cb=20110719094709">
+        <img id="albumArt">
     </div>
     <div id="rightDiv">
         <div id="nowPlaying">

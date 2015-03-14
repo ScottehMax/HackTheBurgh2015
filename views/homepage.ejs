@@ -63,6 +63,14 @@
             margin-left: 10px
         }
 
+    .queueErr {
+        font-size: 48px;
+        color: #2c2c2c;
+        font-family: 'Roboto';
+        font-weight: 300;
+        margin-top: 50px;
+    }
+
     .queueBox {
         width: 650px;
         height: 100px;
@@ -122,6 +130,27 @@
         }
     ];
 
+    function popQueue(){
+        for(var i in queue){
+            var newSong = queue[i];
+
+            $('#rightDiv').append('\
+                <div id="'+newSong.id+'" style="opacity:0; margin-left: 30px" class="queueBox">\
+                    <img class="queueArt" src="'+newSong.coverUrl+'">\
+                    <div class="queueTextCont">\
+                        <span class="songName">'+newSong.songName+'</span><br>\
+                        <span class="artistName">'+newSong.artistName+'</span>\
+                    </div>\
+                </div>\
+            ');
+
+            $('#'+newSong.id).animate({
+                opacity: 1,
+                marginLeft: '0'
+            },300);
+        }
+    }
+
     function addToQueue(d){
         //queue.push(d);
         var newSong = queue[queue.length-1];
@@ -146,6 +175,70 @@
     function removeFromQueue(id){
 
     }
+
+    function next(){
+        if(queue.length == 0){
+            $('#nowPlaying').animate({
+                opacity: 0,
+                marginLeft: '30px'
+            },300);
+            setTimeout(function(){
+                $('#nowPlaying').html('\
+                    <span id="songNameH">Nothing Playing.</span>\
+                ');
+                setTimeout(function(){
+                    $('#nowPlaying').animate({
+                        opacity: 1,
+                        marginLeft: '0'
+                    },300);
+                },300);
+            },300);
+
+            return false;
+        }
+
+        var newSong = queue[0];
+        console.log(JSON.stringify(newSong));
+
+        $('#'+newSong.id).animate({
+            opacity: 0,
+            marginLeft: '30px'
+        },300);
+
+        setTimeout(function(){
+            $('#nowPlaying').animate({
+                opacity: 0,
+                marginLeft: '30px'
+            },300);
+            $('#albumArt').animate({
+                opacity: 0
+            },300);
+            setTimeout(function(){
+                $('#nowPlaying').html('\
+                    <span id="songNameH">'+newSong.songName+'</span>\
+                    <span id="artistNameH">'+newSong.artistName+'</span>\
+                ');
+                $("#albumArt").attr("src",newSong.coverUrl);
+                setTimeout(function(){
+                    $('#nowPlaying').animate({
+                        opacity: 1,
+                        marginLeft: '0'
+                    },300);
+                    $('#albumArt').animate({
+                        opacity: 1
+                    },300);
+                    $('#'+newSong.id).remove();
+                    queue.shift();
+
+                    if(queue.length == 0){
+                        $('#rightDiv').append('\
+                            <span class="queueErr">Nothing Queued.</span>\
+                        ');
+                    }
+                },300);
+            },300);
+        },100);
+    }
 </script>
 
 <div id="topBar">
@@ -157,16 +250,8 @@
     </div>
     <div id="rightDiv">
         <div id="nowPlaying">
-            <span id="songNameH">The Bay</span>
-            <span id="artistNameH">Metronomy</span>
+            <span id="songNameH">Nothing Playing.</span>
         </div>
-
-        <div class="queueBox">
-            <img class="queueArt" src="http://vignette1.wikia.nocookie.net/lyricwiki/images/6/67/Metronomy_-_The_English_Riviera.jpg/revision/latest?cb=20110719094709">
-            <div class="queueTextCont">
-                <span class="songName">The Bay</span><br>
-                <span class="artistName">Metronomy</span>
-            </div>
-        </div>
+        <span class="queueErr">Nothing Queued.</span>
     </div>
 </div>

@@ -1,7 +1,7 @@
-# HackTheBurgh2015
+# Coolbox
 
-a [Sails](http://sailsjs.org) application
-
+##### An SMS-based Spotify jukebox, using the [Twilio](https://www.twilio.com) API and [Sails](http://sailsjs.org) 
+--------
 ##Object structure (send thru sockets)
 ```
 {

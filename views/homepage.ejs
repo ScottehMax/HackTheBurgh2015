@@ -22,20 +22,37 @@
         width: 1100px;
     }
 
+    #leftDiv {
+        width: 400px;
+        float: left;
+    }
+
     #albumArtCont {
         height: 400px;
         width: 400px;
         -webkit-box-shadow: 0px 2px 10px 0px rgba(0,0,0,0.37);
         -moz-box-shadow: 0px 2px 10px 0px rgba(0,0,0,0.37);
         box-shadow: 0px 2px 10px 0px rgba(0,0,0,0.37);
-        float: left;
         background-image: url('images/logo.png');
         background-size: 400px 400px;
+        margin: 0 0 20px 0;
     }
 
     #albumArt {
         height: 400px;
         width: 400px;
+    }
+
+    .ctrlIcon {
+        font-size: 60px;
+        color: #55A9AC;
+        margin-right: 10px;
+        transition: 0.3s all;
+        cursor: pointer;
+    }
+
+    .ctrlIcon:hover {
+        color: #6CC9CD;
     }
 
     #rightDiv {
@@ -112,48 +129,63 @@
     var queue = [
         {
             'id':          '1',
-            'songName':    'Song Name',
-            'artistName':  'Artist Name',
-            'streamUrl':   'http://bla.com',
-            'coverUrl':    'http://vignette1.wikia.nocookie.net/lyricwiki/images/6/67/Metronomy_-_The_English_Riviera.jpg/revision/latest?cb=20110719094709'
+            'songName':    'Give Me A Try',
+            'artistName':  'The Wombats',
+            'streamUrl':   'https://p.scdn.co/mp3-preview/bb6054ad62641eef7aab2004f8d7b7da9b32cf26',
+            'coverUrl':    'https://i.scdn.co/image/866f416a61a2e663954cc9580a0e018cc1432920'
         },
         {
             'id':          '2',
-            'songName':    'Song Name2',
-            'artistName':  'Artist Name2',
-            'streamUrl':   'http://bla.com',
-            'coverUrl':    'http://vignette1.wikia.nocookie.net/lyricwiki/images/6/67/Metronomy_-_The_English_Riviera.jpg/revision/latest?cb=20110719094709'
+            'songName':    'The Bay',
+            'artistName':  'Metronomy',
+            'streamUrl':   'https://p.scdn.co/mp3-preview/c4ab35f9a2cbc7683bc90f56cfb6d255a12c783b',
+            'coverUrl':    'https://i.scdn.co/image/a6b1db4555057091e63285834e38bf2308fe6a1b'
         },
         {
             'id':          '3',
-            'songName':    'Song Name3',
-            'artistName':  'Artist Name3',
-            'streamUrl':   'http://bla.com',
-            'coverUrl':    'http://vignette1.wikia.nocookie.net/lyricwiki/images/6/67/Metronomy_-_The_English_Riviera.jpg/revision/latest?cb=20110719094709'
+            'songName':    'Men\'s Needs',
+            'artistName':  'The Cribs',
+            'streamUrl':   'https://p.scdn.co/mp3-preview/54763012753bb57be414e72ca5c549181e7cea7f',
+            'coverUrl':    'https://i.scdn.co/image/211dc80f980f1054e59b61c869b53f557850f5c8'
         }
     ];
 
-    function popQueue(){
-        $('#rightDiv').html('<div id="nowPlaying"><span id="songNameH">Nothing Playing.</span></div>');
-        for(var i in queue){
-            var newSong = queue[i];
-
-            $('#rightDiv').append('\
-                <div id="'+newSong.id+'" style="opacity:0; margin-left: 30px" class="queueBox">\
-                    <img class="queueArt" src="'+newSong.coverUrl+'">\
-                    <div class="queueTextCont">\
-                        <span class="songName">'+newSong.songName+'</span><br>\
-                        <span class="artistName">'+newSong.artistName+'</span>\
-                    </div>\
-                </div>\
-            ');
-
-            $('#'+newSong.id).animate({
-                opacity: 1,
-                marginLeft: '0'
-            },300);
+    function popQueue(playNext){
+        if(playNext){
+            $('#rightDiv').html('<div id="nowPlaying"><span id="songNameH">Nothing Playing.</span></div>');
         }
-        next();
+        
+        var i = 0;
+        var to = queue.length;
+
+        function addThis(){
+            setTimeout(function(){
+                var newSong = queue[i];
+
+                $('#rightDiv').append('\
+                    <div id="'+newSong.id+'" style="opacity:0; margin-left: 30px" class="queueBox">\
+                        <img class="queueArt" src="'+newSong.coverUrl+'">\
+                        <div class="queueTextCont">\
+                            <span class="songName">'+newSong.songName+'</span><br>\
+                            <span class="artistName">'+newSong.artistName+'</span>\
+                        </div>\
+                    </div>\
+                ');
+
+                $('#'+newSong.id).animate({
+                    opacity: 1,
+                    marginLeft: '0'
+                },300);
+
+                i++;
+
+                if(i != to) addThis()
+
+            },100);
+        }
+
+        addThis();
+        if(playNext) next();
     }
 
     function addToQueue(d){
@@ -181,16 +213,37 @@
 
     }
 
+    function playPause(){
+        var button = document.getElementById('play');
+        var audio = document.getElementById('stream');
+        var isOn = false;
+
+        var isPlaying = !audio.paused;
+
+        if(isPlaying){
+            audio.pause();
+            $('#play').html('<i class="fa fa-play"></i>');
+        } else {
+            audio.play();
+            $('#play').html('<i class="fa fa-pause"></i>');
+        }                       
+    }
+
     function next(){
+        var audio = document.getElementById('stream');
+
         if(queue.length == 0){
             $('#nowPlaying').animate({
                 opacity: 0,
                 marginLeft: '30px'
             },300);
+
             setTimeout(function(){
                 $('#nowPlaying').html('\
                     <span id="songNameH">Nothing Playing.</span>\
                 ');
+                $('#play').html('<i class="fa fa-play"></i>');
+                audio.pause();
                 setTimeout(function(){
                     $('#albumArt').animate({
                         opacity: 0
@@ -210,7 +263,7 @@
 
         $('#'+newSong.id).animate({
             opacity: 0,
-            marginLeft: '30px'
+            marginLeft: '-30px'
         },300);
 
         setTimeout(function(){
@@ -222,11 +275,14 @@
                 opacity: 0
             },300);
             setTimeout(function(){
+                audio.pause();
+                $('#streamSrc').attr('src',newSong.streamUrl);
                 $('#nowPlaying').html('\
                     <span id="songNameH">'+newSong.songName+'</span>\
                     <span id="artistNameH">'+newSong.artistName+'</span>\
                 ');
                 $("#albumArt").attr("src",newSong.coverUrl);
+                audio.load();
                 setTimeout(function(){
                     $('#nowPlaying').animate({
                         opacity: 1,
@@ -235,35 +291,93 @@
                     $('#albumArt').animate({
                         opacity: 1
                     },300);
-                    $('#'+newSong.id).remove();
-                    queue.shift();
 
-                    if(queue.length == 0){
-                        $('#rightDiv').append('\
-                            <span class="queueErr">Nothing Queued.</span>\
-                        ');
-                    }
+                    audio.play();
+                    $('#play').html('<i class="fa fa-pause"></i>');
+
+                    $('#'+newSong.id).animate({
+                        height: 0
+                    },300);
+
+                    setTimeout(function(){
+                        $('#'+newSong.id).remove();
+
+                        queue.shift();
+
+                        if(queue.length == 0){
+                            $('#rightDiv').append('\
+                                <span class="queueErr">Nothing Queued.</span>\
+                            ');
+                        }
+                    },300);
                 },300);
             },300);
         },100);
     }
 
+    function sort(){
+        var j = 0;
+        var to = queue.length;
+
+        function removeThis(){
+            setTimeout(function(){
+                var newSong = queue[j];
+
+                $('#'+newSong.id).animate({
+                    opacity: 0,
+                    marginLeft: '-30px'
+                },300);
+             
+                j++;
+                if(j != to) removeThis()
+
+            },100);
+        }
+
+        popQueue(false);
+    }
+
     $(window).ready(function(){
-        popQueue();
+        setTimeout(popQueue(true), 500);
+
+        var isPlaying = false;
+
+        $("#stream").bind('ended', function(){
+            next();
+        });
+
+        console.log('connecting...');
+        io.socket.get("/test");
+        io.socket.on('connect',function(message){
+            console.log('connected!');
+            io.socket.on('message',function(message){
+                console.log(JSON.stringify(message));
+            });
+        });
+
     });
 </script>
 
-<div id="topBar">
-    
-</div>
+<div id="topBar"></div>
 <div id="cont">
-    <div id="albumArtCont">
-        <img id="albumArt">
+
+    <div id="leftDiv">
+        <div id="albumArtCont">
+            <img id="albumArt">
+        </div>
+        <span class="ctrlIcon" onclick="playPause()" id="play"><i class="fa fa-play"></i></span>
+        <span class="ctrlIcon" style="float: right; margin-right: 0"onclick="next()" id="fwd"><i class="fa fa-forward"></i></span>
     </div>
+        
     <div id="rightDiv">
         <div id="nowPlaying">
             <span id="songNameH">Nothing Playing.</span>
         </div>
         <span class="queueErr">Nothing Queued.</span>
     </div>
+
 </div>
+
+<audio id="stream">
+    <source id="streamSrc" src="" type="audio/mpeg" />
+</audio>

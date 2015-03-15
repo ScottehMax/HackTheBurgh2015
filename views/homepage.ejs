@@ -179,39 +179,41 @@
 
     var queue = [
         {
-            'id':          '1',
-            'songName':    'Give Me A Try',
-            'artistName':  'The Wombats',
-            'streamUrl':   'https://p.scdn.co/mp3-preview/bb6054ad62641eef7aab2004f8d7b7da9b32cf26',
-            'coverUrl':    'https://i.scdn.co/image/866f416a61a2e663954cc9580a0e018cc1432920',
-            'score':       0,
-            'shortcode':   '4822'
+            "id":          "1",
+            "songName":    "Give Me A Try",
+            "artistName":  "The Wombats",
+            "streamUrl":   "https://p.scdn.co/mp3-preview/bb6054ad62641eef7aab2004f8d7b7da9b32cf26",
+            "coverUrl":    "https://i.scdn.co/image/866f416a61a2e663954cc9580a0e018cc1432920",
+            "score":       0,
+            "shortcode":   "4822"
         },
         {
-            'id':          '2',
-            'songName':    'The Bay',
-            'artistName':  'Metronomy',
-            'streamUrl':   'https://p.scdn.co/mp3-preview/c4ab35f9a2cbc7683bc90f56cfb6d255a12c783b',
-            'coverUrl':    'https://i.scdn.co/image/a6b1db4555057091e63285834e38bf2308fe6a1b',
-            'score':       0,
-            'shortcode':   '5275'
+            "id":          "2",
+            "songName":    "The Bay",
+            "artistName":  "Metronomy",
+            "streamUrl":   "https://p.scdn.co/mp3-preview/c4ab35f9a2cbc7683bc90f56cfb6d255a12c783b",
+            "coverUrl":    "https://i.scdn.co/image/a6b1db4555057091e63285834e38bf2308fe6a1b",
+            "score":       0,
+            "shortcode":   "5275"
         },
         {
-            'id':          '3',
-            'songName':    'Men\'s Needs',
-            'artistName':  'The Cribs',
-            'streamUrl':   'https://p.scdn.co/mp3-preview/54763012753bb57be414e72ca5c549181e7cea7f',
-            'coverUrl':    'https://i.scdn.co/image/211dc80f980f1054e59b61c869b53f557850f5c8',
-            'score':       1,
-            'shortcode':   '8452'
+            "id":          "3",
+            "songName":    "Men's Needs",
+            "artistName":  "The Cribs",
+            "streamUrl":   "https://p.scdn.co/mp3-preview/54763012753bb57be414e72ca5c549181e7cea7f",
+            "coverUrl":    "https://i.scdn.co/image/211dc80f980f1054e59b61c869b53f557850f5c8",
+            "score":       1,
+            "shortcode":   "8452"
         }
     ];
 
     var shortcodes = [
-        '4822',
-        '5275',
-        '8452'
+        "4822",
+        "5275",
+        "8452"
     ];
+
+    var np = {};
 
     function genCode(){
         return Math.floor((Math.random() * 9000) + 1000);
@@ -298,6 +300,8 @@
         newSong.shortcode = thisCode;
         shortcodes.push(thisCode.toString());
 
+        $.post('/queue/add',{'song': JSON.stringify(newSong)});
+
         if(!isPlaying) $('#queued').html('');
         if (queue.length > 0 && getNothingMsg()) {
             $('#queued').html('');
@@ -357,6 +361,8 @@
         if(queue.length == 0){
             isPlaying = false;
 
+            np = {};
+
             $('#streamSrc').attr('src','');
             audio.load();
 
@@ -389,6 +395,10 @@
 
         var newSong = queue[0];
         console.log(JSON.stringify(newSong));
+
+        np = newSong;
+
+        $.post('/queue/next',{});
 
         $('#'+newSong.id).animate({
             opacity: 0,
@@ -479,6 +489,11 @@
         removeThis();
 
         queue.sort(function(a,b){return b.score-a.score});
+
+        var npQ = JSON.parse(JSON.stringify(queue));
+        npQ.unshift(np);
+
+        $.post('/queue',{'queue': JSON.stringify(npQ)}, function(){console.log('queue posted')});
         
         popQueue(false);
     }
@@ -558,6 +573,10 @@
 
         $.get('/input/reset', function(){});
 
+        $.post('/queue',{'queue': JSON.stringify(queue)}, function(){
+
+        });
+
         var switcher = true;
 
         setInterval(function(){
@@ -566,7 +585,7 @@
             },300);
             setTimeout(function(){
                 if(switcher){
-                    $('#details').html('<b>01506 243333</b> | Text "voteup (code)" or "votedown (code)".');
+                    $('#details').html('<b>01506 243333</b> | Text "upvote (code)" or "downvote (code)".');
                 } else {
                     $('#details').html('<b>01506 243333</b> | Text requests.');
                 }

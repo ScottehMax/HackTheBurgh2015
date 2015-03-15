@@ -46,7 +46,12 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-  'post /test': 'InputController.logText'
+  'post /test':       'InputController.logText',
+  'post /queue':      'InputController.setQueue',
+  'get /queue':       'InputController.getQueue',
+
+  'post /queue/add':  'InputController.add',
+  'post /queue/next': 'InputController.next'
 
 
 };

@@ -9,6 +9,8 @@ var request = require('request');
 
 var numbers = {};
 
+var queue = [];
+
 var getStuff = function (d) {
 	if (d) {
 		var track = d.tracks.items[0];
@@ -28,7 +30,7 @@ var getStuff = function (d) {
 };
 
 var matchDown = function (text) {
-	var booRegex = /votedown ([0-9]+)/i;
+	var booRegex = /downvote ([0-9]+)/i;
 	var matched = text.match(booRegex);
 
 	sails.log(JSON.stringify(matched));
@@ -46,7 +48,7 @@ var matchDown = function (text) {
 };
 
 var matchUp = function (text) {
-	var booRegex = /voteup ([0-9]+)/i;
+	var booRegex = /upvote ([0-9]+)/i;
 	var matched = text.match(booRegex);
 
 	sails.log(JSON.stringify(matched));
@@ -137,6 +139,24 @@ module.exports = {
 		numbers = {};
 		sails.log('reset');
 		return res.send('done');
-	}
+	},
+	setQueue: function(req,res){
+		sails.log(queue);
+		queue = JSON.parse(req.param('queue'));
+		return res.send(queue);
+	},
+	getQueue: function(req,res){
+		return res.send(queue);
+	},
+	next: function(req,res){
+		sails.log(queue);
+		queue.shift();
+		return res.send(queue);
+	},
+	add: function(req,res){
+		sails.log(queue);
+		queue.push(JSON.parse(req.param('song')));
+		return res.send(queue);
+	},
 };
 

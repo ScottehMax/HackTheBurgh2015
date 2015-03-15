@@ -76,7 +76,7 @@ module.exports = {
 			numbers[sender] = [];
 		}
 
-		if(numbers[sender].indexOf(message) > -1){
+		if(numbers[sender].indexOf(message) > -1 && sender != 'pebble'){
 			return res.send({'error': 'already voted'});
 		}
 

@@ -216,7 +216,11 @@
     var np = {};
 
     function genCode(){
-        return Math.floor((Math.random() * 9000) + 1000);
+        var ret = Math.floor((Math.random() * 9000) + 1000);
+        while (shortcodes.indexOf(ret.toString()) > -1) {
+            ret = Math.floor((Math.random() * 9000) + 1000);
+        }
+        return ret;
     }
 
     function popQueue(playNext){
@@ -256,7 +260,7 @@
                 i++;
                 totalCount++;
 
-                shortcodes.push(newSong.shortcode.toString());
+                shortcodes.push(newSong.shortcode.toString());    
 
                 isQueued = true;
 

@@ -230,7 +230,7 @@
                 i++;
                 totalCount++;
 
-                shortcodes.push(newSong.shortcode);
+                shortcodes.push(newSong.shortcode.toString());
 
                 isQueued = true;
 
@@ -260,7 +260,9 @@
 
         var thisCode = genCode();
         newSong.shortcode = thisCode;
-        shortcodes.push(thisCode);
+        shortcodes.push(thisCode.toString());
+
+        if(!isPlaying) $('#queued').html('');
 
         $('#queued').append('\
             <div id="'+newSong.id+'" style="opacity:0; margin-left: 30px" class="queueBox">\
@@ -278,6 +280,8 @@
             opacity: 1,
             marginLeft: '0'
         },300);
+
+        if(queue.length == 1) next();
     }
 
     function removeFromQueue(id){
@@ -468,17 +472,21 @@
                     } else {
                         sortQueue();
                     }
-                } else if(message.type == 'up'){
+                } 
+                if(message.type == 'up'){
                     var ind = shortcodes.indexOf(message.code);
                     if(ind > -1){
                         queue[ind].score++;
+                        console.log('up!!');
                         console.log(queue[ind]);
                         sortQueue();
                     }
-                } else if(message.type == 'down'){
+                } 
+                if(message.type == 'down'){
                     var ind = shortcodes.indexOf(message.code);
                     if(ind > -1){
                         queue[ind].score--;
+                        console.log('down!!');
                         console.log(queue[ind]);
                         if(queue[ind].score < -3){
                             removeFromQueue(queue[ind].id);

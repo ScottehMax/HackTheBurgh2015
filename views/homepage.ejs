@@ -275,6 +275,18 @@
                 return true;
             }
         }
+
+
+        function getNothingMsg() {
+            try {
+                var a = $('#queued')[0].children[0].innerText.indexOf('Nothing Queued.');
+                return a == 0;
+            }
+            catch (e) {
+                return false;
+            }
+        }
+
         queue.push(d);
 
         var newSong = queue[queue.length-1];
@@ -287,6 +299,9 @@
         shortcodes.push(thisCode.toString());
 
         if(!isPlaying) $('#queued').html('');
+        if (queue.length > 0 && getNothingMsg()) {
+            $('#queued').html('');
+        }
 
         $('#queued').append('\
             <div id="'+newSong.id+'" style="opacity:0; margin-left: 30px" class="queueBox">\
@@ -305,7 +320,7 @@
             marginLeft: '0'
         },300);
 
-        if(queue.length == 1) next();
+        if(queue.length == 1 && !isPlaying) next();
     }
 
     function removeFromQueue(id){
@@ -581,7 +596,7 @@
         <span class="ctrlIcon" onclick="playPause()" id="play"><i class="fa fa-play"></i></span>
         <span class="ctrlIcon" style="float: right; margin-right: 0"onclick="next()" id="fwd"><i class="fa fa-forward"></i></span>
         <div style="class: both"></div>
-        <div id="progressBar"><span class="progressBar" style=""></span></div>
+        <div id="progressBar"><span class="progressBar"></span></div>
     </div>
         
     <div id="rightDiv">

@@ -204,6 +204,8 @@
         var i = 0;
         var to = queue.length;
 
+        shortcodes = [];
+
         function addThis(){
             setTimeout(function(){
                 var newSong = queue[i];
@@ -227,6 +229,8 @@
 
                 i++;
                 totalCount++;
+
+                shortcodes.push(newSong.shortcode);
 
                 isQueued = true;
 
@@ -277,7 +281,14 @@
     }
 
     function removeFromQueue(id){
-
+        for(var i in queue){
+            if(queue[i].id == id){
+                queue.splice(i,1);
+                shortcodes.splice(i,1);
+                sortQueue();
+                break;
+            }
+        }
     }
 
     function playPause(){
@@ -416,7 +427,7 @@
              
                 j++;
 
-                if(j != to) removeThis()
+                if(j != to) removeThis();
 
             },100);
         }
@@ -462,16 +473,24 @@
                     if(ind > -1){
                         queue[ind].score++;
                         console.log(queue[ind]);
+                        sortQueue();
                     }
                 } else if(message.type == 'down'){
                     var ind = shortcodes.indexOf(message.code);
                     if(ind > -1){
                         queue[ind].score--;
                         console.log(queue[ind]);
+                        if(queue[ind].score < -3){
+                            removeFromQueue(queue[ind].id);
+                        } else {
+                            sortQueue();
+                        }
                     }
                 }
             });
         });
+
+        $.get('/input/reset', function(){});
 
     });
 </script>

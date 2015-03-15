@@ -7,6 +7,8 @@
 
 var request = require('request');
 
+var numbers = {};
+
 var getStuff = function (d) {
 	if (d) {
 		var track = d.tracks.items[0];
@@ -26,8 +28,10 @@ var getStuff = function (d) {
 };
 
 var matchDown = function (text) {
-	var booRegex = /-down ([0-9]+)/i;
+	var booRegex = /votedown ([0-9]+)/i;
 	var matched = text.match(booRegex);
+
+	sails.log(JSON.stringify(matched));
 
 	if (matched) {
 		if(matched[1].length == 4){
@@ -42,8 +46,10 @@ var matchDown = function (text) {
 };
 
 var matchUp = function (text) {
-	var booRegex = /-up ([0-9]+)/i;
+	var booRegex = /voteup ([0-9]+)/i;
 	var matched = text.match(booRegex);
+
+	sails.log(JSON.stringify(matched));
 
 	if (matched) {
 		if(matched[1].length == 4){
@@ -64,6 +70,17 @@ module.exports = {
 		var message = req.body.Body;
 		sails.log(sender + ": " + message);
 
+		if(numbers[sender] == null){
+			numbers[sender] = [];
+		}
+
+		if(numbers[sender].indexOf(message) > -1){
+			return res.send({'error': 'already voted'});
+		}
+
+		numbers[sender].push(message);
+		sails.log(numbers);
+
 		var isDown = matchDown(message);
 		var isUp = matchUp(message);
 
@@ -83,6 +100,10 @@ module.exports = {
 
 					// for some reason, nobody told me the response would be a string
 					resp_body = JSON.parse(resp_body);
+
+					if(resp_body.tracks.items.length == 0){
+						return res.send({'error': 'none'});
+					}
 
 					sails.log(getStuff(resp_body));
 					sails.sockets.blast({'type':'add','data':getStuff(resp_body)});
@@ -105,12 +126,17 @@ module.exports = {
 					sails.log(getStuff(resp_body));
 					sails.sockets.blast({'type':'add','data':getStuff(resp_body)});
 
-					count++
+					count++;
 
 					doReq();
 				}
 			});
 		}
+	},
+	reset: function(req,res){
+		numbers = {};
+		sails.log('reset');
+		return res.send('done');
 	}
 };
 

@@ -13,8 +13,11 @@ From the Twilio website, make sure the endpoint for SMS messages is pointing at 
 --------
 
 Sent messages should take the following form:
+
 ``song artist`` or ``artist song``
+
 Will perform a search using Spotify's API, and return the first result. Does nothing if no results were found.
 
 ``upvote (id)`` or ``downvote (id)``
+
 Will increase or decrease the song with the specified ID.
